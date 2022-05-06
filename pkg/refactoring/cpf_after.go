@@ -6,12 +6,67 @@ import (
 	"strings"
 )
 
+type cpf struct {
+	rawCPF  string
+	isValid bool
+}
+
 type verificationData struct {
 	cpf                                              string
 	summationFirstDigit                              int
 	summationSecondDigit                             int
 	startingNumberSubtractionFirstVerificationDigit  int
 	startingNumberSubtractionSecondVerificationDigit int
+}
+
+func (cpf *cpf) validate() {
+
+	isEmptyCPF := cpf.rawCPF == ""
+	if isEmptyCPF {
+		cpf.isValid = false
+		return
+	}
+
+	if isInvalidNumberOfCharacters(cpf.rawCPF) {
+		cpf.isValid = false
+		return
+	}
+
+	cleanCpf := removeSpecialCharacters(cpf.rawCPF)
+	if isAllSameDigits(cleanCpf) {
+		cpf.isValid = false
+		return
+	}
+
+	var numberDigitVerification, numberDigitResult string
+	var summationFirstDigit, summationSecondDigit, firstVerificationDigit, secondVerificationDigit, restDivision int
+	var startingNumberSubtractionFirstVerificationDigit int = 11
+	var startingNumberSubtractionSecondVerificationDigit int = 12
+	summationFirstDigit = 0
+	summationSecondDigit = 0
+	firstVerificationDigit = 0
+	secondVerificationDigit = 0
+	restDivision = 0
+	verification := verificationData{
+		cpf:                  cleanCpf,
+		summationFirstDigit:  summationFirstDigit,
+		summationSecondDigit: summationSecondDigit,
+		startingNumberSubtractionFirstVerificationDigit:  startingNumberSubtractionFirstVerificationDigit,
+		startingNumberSubtractionSecondVerificationDigit: startingNumberSubtractionSecondVerificationDigit,
+	}
+	summationFirstDigit, summationSecondDigit, err := computeVerificationDigits(verification)
+	if err != nil {
+		cpf.isValid = false
+		return
+	}
+	restDivision = computeRestDivision(summationFirstDigit, startingNumberSubtractionFirstVerificationDigit)
+	firstVerificationDigit = computeVerificationDigit(restDivision, startingNumberSubtractionFirstVerificationDigit)
+	summationSecondDigit += 2 * firstVerificationDigit
+	restDivision = computeRestDivision(summationSecondDigit, startingNumberSubtractionFirstVerificationDigit)
+	secondVerificationDigit = computeVerificationDigit(restDivision, startingNumberSubtractionFirstVerificationDigit)
+	numberDigitVerification = getLastTwoDigitsFromCPF(cleanCpf)
+	numberDigitResult = concatenateDigits(firstVerificationDigit, secondVerificationDigit)
+	cpf.isValid = numberDigitVerification == numberDigitResult
 }
 
 func isInvalidNumberOfCharacters(cpf string) bool {
@@ -85,50 +140,4 @@ func concatenateDigits(firstVerificationDigit, secondVerificationDigit int) stri
 
 func getLastTwoDigitsFromCPF(cpf string) string {
 	return cpf[len(cpf)-2:]
-}
-
-func IsValid(cpf string) bool {
-
-	isEmptyCPF := cpf == ""
-	if isEmptyCPF {
-		return false
-	}
-
-	if isInvalidNumberOfCharacters(cpf) {
-		return false
-	}
-
-	cpf = removeSpecialCharacters(cpf)
-	if isAllSameDigits(cpf) {
-		return false
-	}
-
-	var numberDigitVerification, numberDigitResult string
-	var summationFirstDigit, summationSecondDigit, firstVerificationDigit, secondVerificationDigit, restDivision int
-	var startingNumberSubtractionFirstVerificationDigit int = 11
-	var startingNumberSubtractionSecondVerificationDigit int = 12
-	summationFirstDigit = 0
-	summationSecondDigit = 0
-	firstVerificationDigit = 0
-	secondVerificationDigit = 0
-	restDivision = 0
-	verification := verificationData{
-		cpf:                  cpf,
-		summationFirstDigit:  summationFirstDigit,
-		summationSecondDigit: summationSecondDigit,
-		startingNumberSubtractionFirstVerificationDigit:  startingNumberSubtractionFirstVerificationDigit,
-		startingNumberSubtractionSecondVerificationDigit: startingNumberSubtractionSecondVerificationDigit,
-	}
-	summationFirstDigit, summationSecondDigit, err := computeVerificationDigits(verification)
-	if err != nil {
-		return false
-	}
-	restDivision = computeRestDivision(summationFirstDigit, startingNumberSubtractionFirstVerificationDigit)
-	firstVerificationDigit = computeVerificationDigit(restDivision, startingNumberSubtractionFirstVerificationDigit)
-	summationSecondDigit += 2 * firstVerificationDigit
-	restDivision = computeRestDivision(summationSecondDigit, startingNumberSubtractionFirstVerificationDigit)
-	secondVerificationDigit = computeVerificationDigit(restDivision, startingNumberSubtractionFirstVerificationDigit)
-	numberDigitVerification = getLastTwoDigitsFromCPF(cpf)
-	numberDigitResult = concatenateDigits(firstVerificationDigit, secondVerificationDigit)
-	return numberDigitVerification == numberDigitResult
 }

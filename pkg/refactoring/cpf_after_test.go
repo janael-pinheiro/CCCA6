@@ -26,17 +26,18 @@ func TestGivenInvalidCPFReturnFalse(t *testing.T) {
 		},
 	}
 	for _, test := range testCases {
-		isCPFValid := IsValid(test.input)
-		assert.Equal(t, isCPFValid, test.want, test.name)
+		fakeCPF := cpf{rawCPF: test.input}
+		fakeCPF.validate()
+		assert.Equal(t, fakeCPF.isValid, test.want, test.name)
 	}
 
 }
 
 func TestGivenEmptyStringReturnFalse(t *testing.T) {
-	fake_cpf := ""
-	isCPFValid := IsValid(fake_cpf)
+	fakeCPF := cpf{rawCPF: ""}
+	fakeCPF.validate()
 	var expected bool = false
-	assert.Equal(t, isCPFValid, expected)
+	assert.Equal(t, fakeCPF.isValid, expected)
 }
 
 func TestGivenCPFWithInvalidNumberCharactersReturnFalse(t *testing.T) {
@@ -58,8 +59,9 @@ func TestGivenCPFWithInvalidNumberCharactersReturnFalse(t *testing.T) {
 		},
 	}
 	for _, test := range testCases {
-		isCPFValid := IsValid(test.input)
-		assert.Equal(t, isCPFValid, test.want, test.name)
+		fakeCPF := cpf{rawCPF: test.input}
+		fakeCPF.validate()
+		assert.Equal(t, fakeCPF.isValid, test.want, test.name)
 	}
 }
 func TestGivenValidCPFReturnTrue(t *testing.T) {
@@ -86,8 +88,9 @@ func TestGivenValidCPFReturnTrue(t *testing.T) {
 		},
 	}
 	for _, test := range testCases {
-		isCPFValid := IsValid(test.input)
-		assert.Equal(t, isCPFValid, test.want, test.name)
+		fakeCPF := cpf{rawCPF: test.input}
+		fakeCPF.validate()
+		assert.Equal(t, fakeCPF.isValid, test.want, test.name)
 	}
 
 }
@@ -106,8 +109,9 @@ func TestGivenCPFWithAllSameDigitsReturnFalse(t *testing.T) {
 		},
 	}
 	for _, test := range testCases {
-		isCPFValid := IsValid(test.input)
-		assert.Equal(t, isCPFValid, test.want, test.name)
+		fakeCPF := cpf{rawCPF: test.input}
+		fakeCPF.validate()
+		assert.Equal(t, fakeCPF.isValid, test.want, test.name)
 	}
 
 }
