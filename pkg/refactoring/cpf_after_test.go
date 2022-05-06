@@ -1,4 +1,4 @@
-package refectoring
+package refactoring
 
 import (
 	"testing"
