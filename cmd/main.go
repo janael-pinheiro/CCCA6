@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	refectoring "github.com/janael-pinheiro/CCCA6/refactoring"
+	refectoring "github.com/janael-pinheiro/CCCA6/pkg/refactoring"
 )
 
 func main() {
